@@ -1,0 +1,8 @@
+Verkette liste vorbereiten für prak2
+
+SSH:
+bsd9.fh-muenster.de
+
+Nutzer:
+bsduser035
+8654428

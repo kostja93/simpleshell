@@ -22,6 +22,32 @@
 #include <string.h>
 #include "token.h"
 
+struct args_struct {
+    char *arg;
+    struct args_struct *next;
+};
+
+struct command_struct {
+    char *cmd;
+    struct args_struct *args;
+};
+
+typedef struct args_struct* ArgList;
+typedef struct command_struct* Command;
+
+Command add_command(char *command) {
+    Command newCommand = malloc(sizeof(struct command_struct));
+    newCommand->cmd = command;
+    return newCommand;
+}
+
+void append_arg(Command command, char *arg) {
+    ArgList list = command->args;
+    while (list->next != null) {
+        list = list->next;
+    }
+    list->arg = arg;
+}
 
 int main(void) {
     char defaulttext[] = "smpsh > ";
@@ -61,9 +87,11 @@ int main(void) {
                 case T_QUOTE:
                     printf("T_QUOTE <%s> \n", word);
                     break;
-                case T_WORD:
-                    printf("T_WORD <%s>  \n", word);
+                case T_WORD: {
+                    Command newCommand = add_command( word );
+                    printf("%s \n", newCommand->cmd);
                     break;
+                };
                 case T_BAR:
                     printf("T_BAR \n");
                     break;
