@@ -118,7 +118,15 @@ int main(void) {
              */
             switch (gettoken(word, LINEMAX)) {
                 case T_QUOTE:
-                    printf("T_QUOTE <%s> \n", word);
+                    if (cmd == 1) {
+                        int i;
+                        for (i = 0; i < sizeof(word); i++) {
+                            word[i] = word[i+1];
+                            if (word[i+1] == '"')
+                                word[i] = ' ';
+                        }
+                        printf("%s",word);
+                    }
                     break;
                 case T_WORD: {
                     /*
@@ -138,6 +146,7 @@ int main(void) {
                     }
                     if (strcmp(word, "cd") == 0){
                         cmd = 4;
+                        break;
                     }
                     if (strcmp(word, "kill") == 0){
                         cmd = 5;
@@ -154,9 +163,13 @@ int main(void) {
                             break;
                         }
                         case 3: {
+                            if (strcmp("pwd",word) != 0) {
+                                printf("Wrong usage of pwd");
+                                break;
+                            }
                             char path[1024];
                             getcwd(path, sizeof(path));
-                            printf("%s", path);
+                            printf("%s\n", path);
                             break;
                         }
                         case 4: {
