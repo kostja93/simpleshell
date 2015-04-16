@@ -20,6 +20,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <signal.h>
 #include "token.h"
 
 struct args_struct {
@@ -32,8 +35,34 @@ struct command_struct {
     struct args_struct *args;
 };
 
+struct command_queue_struct {
+    struct command_struct *cmd;
+    struct command_queue_struct *next;
+};
+
 typedef struct args_struct* ArgList;
 typedef struct command_struct* Command;
+typedef struct command_queue_struct* CommandQueue;
+
+void pushCommand(CommandQueue queue, Command cmd) {
+    CommandQueue q = malloc(sizeof(struct command_queue_struct));
+
+    CommandQueue tmpQ = queue;
+    q->cmd = cmd;
+
+    while (tmpQ->next != NULL) {
+        tmpQ = tmpQ->next;
+    }
+
+    tmpQ->next = q;
+}
+
+Command pullCommand(CommandQueue queue) {
+    Command cmd = queue->cmd;
+    queue = queue->next;
+
+    return cmd;
+}
 
 Command add_command(char *command) {
     Command newCommand = malloc(sizeof(struct command_struct));
@@ -43,7 +72,7 @@ Command add_command(char *command) {
 
 void append_arg(Command command, char *arg) {
     ArgList list = command->args;
-    while (list->next != null) {
+    while (list->next != NULL) {
         list = list->next;
     }
     list->arg = arg;
@@ -51,9 +80,13 @@ void append_arg(Command command, char *arg) {
 
 int main(void) {
     char defaulttext[] = "smpsh > ";
-    char word[LINEMAX];
+    char word[LINEMAX], lastWord[LINEMAX];
     char *prompt = defaulttext;
     int goon;
+
+    /**/
+    CommandQueue commands = malloc(sizeof(struct command_queue_struct));
+    int cmd = 0;
 
     /* Schleife ueber alle Eingabezeilen    */
     while (TRUE) {
@@ -88,8 +121,53 @@ int main(void) {
                     printf("T_QUOTE <%s> \n", word);
                     break;
                 case T_WORD: {
+                    /*
                     Command newCommand = add_command( word );
-                    printf("%s \n", newCommand->cmd);
+                    pushCommand(commands, newCommand);
+                     */
+                    if (strcmp(word, "myecho") == 0){
+                        cmd = 1;
+                        break;
+                    }
+                    if (strcmp(word, "exit") == 0){
+                        cmd = 2;
+                        break;
+                    }
+                    if (strcmp(word, "pwd") == 0){
+                        cmd = 3;
+                    }
+                    if (strcmp(word, "cd") == 0){
+                        cmd = 4;
+                    }
+                    if (strcmp(word, "kill") == 0){
+                        cmd = 5;
+                        break;
+                    }
+
+                    switch (cmd) {
+                        case 1: {
+                            printf("%s ", word);
+                            break;
+                        }
+                        case 2: {
+                            exit(atoi(word));
+                            break;
+                        }
+                        case 3: {
+                            char path[1024];
+                            getcwd(path, sizeof(path));
+                            printf("%s", path);
+                            break;
+                        }
+                        case 4: {
+                            chdir(word);
+                            break;
+                        }
+                        case 5: {
+                            kill(atoi(word), SIGKILL);
+                            break;
+                        }
+                    }
                     break;
                 };
                 case T_BAR:
@@ -114,7 +192,7 @@ int main(void) {
                     printf("T_LT \n");
                     break;
                 case T_NL:
-                    printf("T_NL \n");
+                    printf("\n");
                     goon = FALSE;
                     break;
                 case T_NULL:
@@ -129,6 +207,15 @@ int main(void) {
                     exit(1);
             }
         }
+        /*
+        while (commands != NULL) {
+            Command cmd = pullCommand(commands);
+            /*
+             * Execute Command here
+             *
+             *
+        }*/
+
         /*
          *
          * Hier sind die Systemroutinen aufzurufen, die die eigentliche
