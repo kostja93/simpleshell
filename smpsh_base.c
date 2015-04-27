@@ -24,68 +24,16 @@
 #include <sys/types.h>
 #include <signal.h>
 #include "token.h"
-
-struct args_struct {
-    char *arg;
-    struct args_struct *next;
-};
-
-struct command_struct {
-    char *cmd;
-    struct args_struct *args;
-};
-
-struct command_queue_struct {
-    struct command_struct *cmd;
-    struct command_queue_struct *next;
-};
-
-typedef struct args_struct* ArgList;
-typedef struct command_struct* Command;
-typedef struct command_queue_struct* CommandQueue;
-
-void pushCommand(CommandQueue queue, Command cmd) {
-    CommandQueue q = malloc(sizeof(struct command_queue_struct));
-
-    CommandQueue tmpQ = queue;
-    q->cmd = cmd;
-
-    while (tmpQ->next != NULL) {
-        tmpQ = tmpQ->next;
-    }
-
-    tmpQ->next = q;
-}
-
-Command pullCommand(CommandQueue queue) {
-    Command cmd = queue->cmd;
-    queue = queue->next;
-
-    return cmd;
-}
-
-Command add_command(char *command) {
-    Command newCommand = malloc(sizeof(struct command_struct));
-    newCommand->cmd = command;
-    return newCommand;
-}
-
-void append_arg(Command command, char *arg) {
-    ArgList list = command->args;
-    while (list->next != NULL) {
-        list = list->next;
-    }
-    list->arg = arg;
-}
+#include "commands.h"
+#include "helper.h"
 
 int main(void) {
     char defaulttext[] = "smpsh > ";
-    char word[LINEMAX], lastWord[LINEMAX];
+    char word[LINEMAX];
     char *prompt = defaulttext;
     int goon;
 
     /**/
-    CommandQueue commands = malloc(sizeof(struct command_queue_struct));
     int cmd = 0;
 
     /* Schleife ueber alle Eingabezeilen    */
@@ -119,13 +67,7 @@ int main(void) {
             switch (gettoken(word, LINEMAX)) {
                 case T_QUOTE:
                     if (cmd == 1) {
-                        int i;
-                        for (i = 0; i < sizeof(word); i++) {
-                            word[i] = word[i+1];
-                            if (word[i+1] == '"')
-                                word[i] = ' ';
-                        }
-                        printf("%s",word);
+                        printf("%s", trimQuote(word, sizeof(word)));
                     }
                     break;
                 case T_WORD: {
@@ -223,7 +165,7 @@ int main(void) {
         /*
         while (commands != NULL) {
             Command cmd = pullCommand(commands);
-            /*
+             *
              * Execute Command here
              *
              *
