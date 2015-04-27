@@ -20,9 +20,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <signal.h>
 #include "token.h"
 #include "commands.h"
 #include "helper.h"
@@ -33,8 +30,9 @@ int main(void) {
     char *prompt = defaulttext;
     int goon;
 
-    /**/
-    int cmd = 0;
+    /*Declaration commands variables*/
+    Command cmd = NULL;
+
 
     /* Schleife ueber alle Eingabezeilen    */
     while (TRUE) {
@@ -66,62 +64,13 @@ int main(void) {
              */
             switch (gettoken(word, LINEMAX)) {
                 case T_QUOTE:
-                    if (cmd == 1) {
-                        printf("%s", trimQuote(word, sizeof(word)));
-                    }
+                    strcpy(word, trimQuote(word, sizeof(word)));
                     break;
                 case T_WORD: {
-                    /*
-                    Command newCommand = add_command( word );
-                    pushCommand(commands, newCommand);
-                     */
-                    if (strcmp(word, "myecho") == 0){
-                        cmd = 1;
-                        break;
-                    }
-                    if (strcmp(word, "exit") == 0){
-                        cmd = 2;
-                        break;
-                    }
-                    if (strcmp(word, "pwd") == 0){
-                        cmd = 3;
-                    }
-                    if (strcmp(word, "cd") == 0){
-                        cmd = 4;
-                        break;
-                    }
-                    if (strcmp(word, "kill") == 0){
-                        cmd = 5;
-                        break;
-                    }
-
-                    switch (cmd) {
-                        case 1: {
-                            printf("%s ", word);
-                            break;
-                        }
-                        case 2: {
-                            exit(atoi(word));
-                            break;
-                        }
-                        case 3: {
-                            if (strcmp("pwd",word) != 0) {
-                                printf("Wrong usage of pwd");
-                                break;
-                            }
-                            char path[1024];
-                            getcwd(path, sizeof(path));
-                            printf("%s\n", path);
-                            break;
-                        }
-                        case 4: {
-                            chdir(word);
-                            break;
-                        }
-                        case 5: {
-                            kill(atoi(word), SIGKILL);
-                            break;
-                        }
+                    if (cmd == NULL) {
+                        cmd = add_command(word);
+                    } else {
+                        append_arg(cmd, word);
                     }
                     break;
                 };
@@ -147,7 +96,6 @@ int main(void) {
                     printf("T_LT \n");
                     break;
                 case T_NL:
-                    printf("\n");
                     goon = FALSE;
                     break;
                 case T_NULL:
@@ -162,6 +110,8 @@ int main(void) {
                     exit(1);
             }
         }
+        execute_command(cmd);
+        cmd = NULL;
         /*
         while (commands != NULL) {
             Command cmd = pullCommand(commands);
