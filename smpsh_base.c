@@ -32,6 +32,8 @@ int main(void) {
 
     /*Declaration commands variables*/
     Command cmd = NULL;
+    int amp     = 0;
+    /*CommandQueue cmdQ = init_queue();*/
 
 
     /* Schleife ueber alle Eingabezeilen    */
@@ -78,7 +80,7 @@ int main(void) {
                     printf("T_BAR \n");
                     break;
                 case T_AMP:
-                    printf("T_AMP \n");
+                    amp = 1;
                     break;
                 case T_SEMI:
                     printf("T_SEMI \n");
@@ -110,16 +112,9 @@ int main(void) {
                     exit(1);
             }
         }
-        execute_command(cmd);
+
+        execute_commandp(cmd, amp);
         cmd = NULL;
-        /*
-        while (commands != NULL) {
-            Command cmd = pullCommand(commands);
-             *
-             * Execute Command here
-             *
-             *
-        }*/
 
         /*
          *

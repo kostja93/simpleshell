@@ -20,17 +20,18 @@ void append_arg(Command command, char *arg) {
 
 CommandQueue init_queue() {
     CommandQueue result = malloc(sizeof(struct command_queue_struct));
-    result->cmd = NULL;
-    result->next = NULL;
+    result->cmd         = malloc(sizeof(struct command_struct));
+    result->next        = NULL;
 
     return result;
 }
 
 void push_command(CommandQueue queue, Command cmd) {
-    CommandQueue q = malloc(sizeof(struct command_queue_struct));
+    CommandQueue q = init_queue();
+    q->cmd = malloc(sizeof(struct command_struct));
+    memcpy(q->cmd, cmd, sizeof(struct command_struct));
 
     CommandQueue tmpQ = queue;
-    q->cmd = cmd;
 
     while (tmpQ->next != NULL) {
         tmpQ = tmpQ->next;
@@ -40,10 +41,13 @@ void push_command(CommandQueue queue, Command cmd) {
 }
 
 Command pull_command(CommandQueue queue) {
-    Command cmd = queue->cmd;
-    queue = queue->next;
+    CommandQueue tmpQ = queue;
 
-    return cmd;
+    while (tmpQ->next->next != NULL) {
+        tmpQ = tmpQ->next;
+    }
+
+    return tmpQ->cmd;
 }
 
 int is_command_queue_empty(CommandQueue queue) {
@@ -53,8 +57,9 @@ int is_command_queue_empty(CommandQueue queue) {
         return 0;
 }
 
-void execute_command(Command command) {
+int execute_command(Command command) {
     char *cmd = command->cmd;
+    int executed = 0;
 
     if (strcmp(cmd, "myecho") == 0){
         ArgList l = command->args;
@@ -65,6 +70,7 @@ void execute_command(Command command) {
             l = l->next;
         }
         printf("\n");
+        executed = 1;
     }
     if (strcmp(cmd, "exit") == 0){
         int errorCode = 0;
@@ -77,10 +83,13 @@ void execute_command(Command command) {
         char path[1024];
         getcwd(path, sizeof(path));
         printf("%s\n", path);
+        executed = 1;
     }
     if (strcmp(cmd, "cd") == 0){
         if (command->args->arg != NULL)
             chdir(command->args->arg);
+
+        executed = 1;
     }
     if (strcmp(cmd, "kill") == 0){
         int errorCode = 0;
@@ -88,5 +97,64 @@ void execute_command(Command command) {
             errorCode = atoi(command->args->arg);
 
         kill(errorCode, SIGKILL);
+        executed = 1;
+    }
+
+    return executed;
+}
+
+int get_arg_list_length(ArgList list) {
+    int i = 0;
+    ArgList tmp = list;
+    while (tmp->next != NULL) {
+        i++;
+        tmp = tmp->next;
+    }
+
+    return i;
+}
+
+void get_array_of_args(Command cmd, char** args) {
+    int i = 1;
+    ArgList tmp = cmd->args;
+    args[0] = malloc(sizeof(char *));
+    args[0] = cmd->cmd;
+    while (tmp->next != NULL) {
+        args[i] = malloc(sizeof(char *));
+        args[i++] = tmp->arg;
+        tmp = tmp->next;
+    }
+}
+
+/*
+ * DEBUGGING
+ * */
+void debug_command(Command cmd, char** args) {
+    int i;
+    printf("-%s", cmd->cmd);
+    for ( i = 0; i <= get_arg_list_length(cmd->args); i++) {
+        printf("-%s\n", args[i]);
+    }
+}
+
+void execute_command_process(Command command, int amp) {
+    int pid = fork();
+
+    if (pid == 0) {
+        char *args[get_arg_list_length(command->args) + 1];
+        get_array_of_args(command, args);
+
+        if (execv(command->cmd, args) == -1 ) {
+            printf("An Error accurt while creating a new proccess");
+            exit(-1);
+        }
+    } else {
+
+    }
+}
+
+void execute_commandp(Command cmd, int amp) {
+    if (execute_command(cmd) == 0) {
+        execute_command_process(cmd, amp);
     }
 }

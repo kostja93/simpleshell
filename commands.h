@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <signal.h>
 
 struct args_struct {
@@ -35,6 +36,12 @@ Command pull_command(CommandQueue queue);
 Command add_command(char *command);
 
 void append_arg(Command command, char *arg);
-void execute_command(Command command);
+int execute_command(Command command);
+void execute_commandp(Command cmd, int amp);
+void execute_command_process(Command command, int amp);
+
+Command pull_command(CommandQueue queue);
+CommandQueue init_queue();
+int is_command_queue_empty(CommandQueue queue);
 
 #endif /*SMPSH_BASE_COMMANDS_H*/
