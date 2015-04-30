@@ -125,10 +125,11 @@ void get_array_of_args(Command cmd, char** args) {
     /*
      * creating full path
      * */
-    char *path = "/bin/";
-    if((args[0] = malloc(strlen(path) +1)) != NULL){
+    char* path = "/bin/";
+    if((args[0] = malloc(strlen(cmd->cmd) + strlen(path) +1)) != NULL) {
         args[0][0] = '\0';   // ensures the memory is an empty string
-        strcat(args[0],path);
+        strcat(args[0], path);
+        strcat(args[0], cmd->cmd);
     } else {
         print_error("Couldn't append string");
     }
