@@ -44,4 +44,11 @@ Command pull_command(CommandQueue queue);
 CommandQueue init_queue();
 int is_command_queue_empty(CommandQueue queue);
 
+/*
+ *
+ * */
+
+void free_cmd(Command cmd);
+void free_args(ArgList list);
+
 #endif /*SMPSH_BASE_COMMANDS_H*/

@@ -113,9 +113,11 @@ int main(void) {
                     exit(1);
             }
         }
-
-        execute_commandp(cmd, amp);
-        cmd = NULL;
+        if (cmd != NULL) {
+            execute_commandp(cmd, amp);
+            free_cmd(cmd);
+            cmd = NULL;
+        }
 
         /*
          *

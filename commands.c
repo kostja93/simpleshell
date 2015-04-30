@@ -158,3 +158,16 @@ void execute_commandp(Command cmd, int amp) {
         execute_command_process(cmd, amp);
     }
 }
+
+void free_cmd(Command cmd) {
+    free(cmd->cmd);
+    free_args(cmd->args);
+    free(cmd);
+}
+
+void free_args(ArgList list) {
+    free(list->arg);
+    if (list->next != NULL)
+        free_args(list->next);
+    free(list);
+}
