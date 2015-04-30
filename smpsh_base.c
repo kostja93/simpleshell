@@ -68,6 +68,9 @@ int main(void) {
             switch (gettoken(word, LINEMAX)) {
                 case T_QUOTE:
                     strcpy(word, trimQuote(word, sizeof(word)));
+                    if ( (strlen(word) > 0) && (NULL != cmd) ) {
+                        append_arg(cmd, word);
+                    }
                     break;
                 case T_WORD: {
                     if (cmd == NULL) {

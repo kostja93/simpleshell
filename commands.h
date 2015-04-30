@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
+#define __EXTENSIONS__
 #include <signal.h>
 
 struct args_struct {

@@ -158,9 +158,7 @@ void execute_command_process(Command command, int amp, int input, int output) {
                 print_error("Error while changing stdout");
         }
 
-        debug_command(command, args);
-
-        if (execv(args[0], args) == -1 )
+        if (execvp(command->cmd, args) == -1 )
             print_error("Error while creating new process");
     } else {
         if ( amp == 0 ) {
@@ -176,13 +174,16 @@ void execute_commandp(Command cmd, int amp) {
 }
 
 void free_cmd(Command cmd) {
-    free(cmd->cmd);
-    free_args(cmd->args);
+    if (NULL != cmd->cmd)
+        free(cmd->cmd);
+    if (NULL != cmd->args)
+        free_args(cmd->args);
     free(cmd);
 }
 
 void free_args(ArgList list) {
-    free(list->arg);
+    if (NULL != list->arg)
+        free(list->arg);
     if (list->next != NULL)
         free_args(list->next);
     free(list);
