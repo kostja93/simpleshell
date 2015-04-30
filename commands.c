@@ -115,42 +115,54 @@ int get_arg_list_length(ArgList list) {
 }
 
 void get_array_of_args(Command cmd, char** args) {
+    if (NULL == cmd)
+        print_error("Unvalid command given");
+    if (NULL == args)
+        print_error("Unvalid array for char array given");
+
     int i = 1;
     ArgList tmp = cmd->args;
-    args[0] = malloc(sizeof(char *));
-    args[0] = cmd->cmd;
+    /*
+     * creating full path
+     * */
+    char *path = "/bin/";
+    if((args[0] = malloc(strlen(path) +1)) != NULL){
+        args[0][0] = '\0';   // ensures the memory is an empty string
+        strcat(args[0],path);
+    } else {
+        print_error("Couldn't append string");
+    }
+
     while (tmp->next != NULL) {
-        args[i] = malloc(sizeof(char *));
         args[i++] = tmp->arg;
         tmp = tmp->next;
     }
+    args[i] = (char *) 0;
 }
 
-/*
- * DEBUGGING
- * */
-void debug_command(Command cmd, char** args) {
-    int i;
-    printf("-%s", cmd->cmd);
-    for ( i = 0; i <= get_arg_list_length(cmd->args); i++) {
-        printf("-%s\n", args[i]);
-    }
-}
-
-void execute_command_process(Command command, int amp) {
+void execute_command_process(Command command, int amp, int input, int output) {
     int status;
     int pid = fork();
 
     if (pid == 0) {
-        char *args[get_arg_list_length(command->args) + 1];
+        char *args[get_arg_list_length(command->args) + 2];
         get_array_of_args(command, args);
 
-        if (execv("/bin/ls", args) == -1 ) {
-            printf("An Error accurt while creating a new proccess");
-            exit(-1);
+        if (input != 0) {
+            if ( dup2(input, 0) < 0 )
+                print_error("Error while changing stdin");
         }
+        if (output != 1) {
+            if ( dup2(output, 1) < 0)
+                print_error("Error while changing stdout");
+        }
+
+        debug_command(command, args);
+
+        if (execv(args[0], args) == -1 )
+            print_error("Error while creating new process");
     } else {
-        if ( amp == 1 ) {
+        if ( amp == 0 ) {
             waitpid(pid, &status, 0);
         }
     }
@@ -158,7 +170,7 @@ void execute_command_process(Command command, int amp) {
 
 void execute_commandp(Command cmd, int amp) {
     if (execute_command(cmd) == 0) {
-        execute_command_process(cmd, amp);
+        execute_command_process(cmd, amp, 0, 1);
     }
 }
 
@@ -173,4 +185,20 @@ void free_args(ArgList list) {
     if (list->next != NULL)
         free_args(list->next);
     free(list);
+}
+
+/*
+ * DEBUGGING
+ * */
+void debug_command(Command cmd, char** args) {
+    int i;
+    printf("-%s", cmd->cmd);
+    for ( i = 0; i <= get_arg_list_length(cmd->args); i++) {
+        printf("-%s\n", args[i]);
+    }
+}
+
+void print_error(char* error_string) {
+    printf("\n\n%s!\n", error_string);
+    exit(-1);
 }

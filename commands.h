@@ -38,17 +38,23 @@ Command add_command(char *command);
 void append_arg(Command command, char *arg);
 int execute_command(Command command);
 void execute_commandp(Command cmd, int amp);
-void execute_command_process(Command command, int amp);
+void execute_command_process(Command command, int amp, int input, int output);
 
 Command pull_command(CommandQueue queue);
 CommandQueue init_queue();
 int is_command_queue_empty(CommandQueue queue);
 
 /*
- *
+ * Speicherverwaltung
  * */
 
 void free_cmd(Command cmd);
 void free_args(ArgList list);
+
+/*
+ * DEBUGGING
+ * */
+void debug_command(Command cmd, char** args);
+void print_error(char* error_string);
 
 #endif /*SMPSH_BASE_COMMANDS_H*/
