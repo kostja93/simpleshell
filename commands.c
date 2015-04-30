@@ -138,18 +138,21 @@ void debug_command(Command cmd, char** args) {
 }
 
 void execute_command_process(Command command, int amp) {
+    int status;
     int pid = fork();
 
     if (pid == 0) {
         char *args[get_arg_list_length(command->args) + 1];
         get_array_of_args(command, args);
 
-        if (execv(command->cmd, args) == -1 ) {
+        if (execv("/bin/ls", args) == -1 ) {
             printf("An Error accurt while creating a new proccess");
             exit(-1);
         }
     } else {
-
+        if ( amp == 1 ) {
+            waitpid(pid, &status, 0);
+        }
     }
 }
 
