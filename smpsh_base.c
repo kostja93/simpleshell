@@ -14,6 +14,7 @@
  *      flex smpsh_scanner.l                  (erzeugt lex.yy.c)
  *      gcc -c lex.yy.c			      (erzeugt lex.yy.o)
  *      gcc -g -Wall -ansi -o smpsh_base smpsh_base.c lex.yy.o -lfl
+ *      gcc -g -Wall -o smpsh_base smpsh_base.c helper.h helper.c commands.h commands.c lex.yy.o -lfl
  ************************************************************************/
 
 
