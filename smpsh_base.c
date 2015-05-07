@@ -35,6 +35,7 @@ int main(void) {
     Command cmd = NULL;
     int amp     = 0;
     int wrong_input = 0;
+    int word_count = 0;
     /*CommandQueue cmdQ = init_queue();*/
 
 
@@ -66,6 +67,7 @@ int main(void) {
              *      Datenstrukturen fuer die Systemaufrufe aufzubauen.
              *
              */
+            word_count++;
             switch (gettoken(word, LINEMAX)) {
                 case T_QUOTE:
                     strcpy(word, trimQuote(word, sizeof(word)));
@@ -75,7 +77,7 @@ int main(void) {
                     break;
                 case T_WORD: {
                     if (cmd == NULL) {
-                        cmd = add_command(word);
+                        cmd = init_command(word);
                     } else {
                         append_arg(cmd, word);
                     }
@@ -90,9 +92,10 @@ int main(void) {
                     amp = 1;
                     break;
                 case T_NL:
-                    goon = FALSE;
-                    break;
                 case T_NULL:
+                    if (word_count == 1) {
+                        wrong_input = 0;
+                    }
                     goon = FALSE;
                     break;
                 default:
@@ -105,7 +108,7 @@ int main(void) {
             free_cmd(cmd);
             cmd = NULL;
         }
-        if (wrong_input == 1 && strlen(word) >= 1){
+        if (wrong_input == 1){
             printf("Unknown command or wrong usage! \n");
             wrong_input = 0;
         }

@@ -1,21 +1,24 @@
 #include "commands.h"
 
-Command add_command(char *command) {
-    Command newCommand = malloc(sizeof(struct command_struct));
-    newCommand->cmd    = malloc(sizeof(char));
+Command init_command(char *command) {
+    Command newCommand = (Command) malloc(sizeof(struct command_struct));
+    newCommand->cmd    = (char *)  malloc(strlen(command)+1);
     strcpy(newCommand->cmd, command);
-    newCommand->args   = malloc(sizeof(struct args_struct));
     return newCommand;
 }
 
 void append_arg(Command command, char *arg) {
     ArgList list = command->args;
-    while (list->next != NULL) {
-        list = list->next;
+    if (list != NULL) {
+        while (list->next != NULL) {
+            list = list->next;
+        }
+    } else {
+        command->args = (ArgList) malloc(sizeof(struct args_struct));
+        list = command->args;
     }
-    list->arg = malloc(sizeof(char));
+    list->arg = (char *) malloc(strlen(arg) + 1);
     strcpy(list->arg, arg);
-    list->next = malloc(sizeof(struct args_struct));
 }
 
 CommandQueue init_queue() {
@@ -106,6 +109,9 @@ int execute_command(Command command) {
 int get_arg_list_length(ArgList list) {
     int i = 0;
     ArgList tmp = list;
+    if (tmp == NULL)
+        return 0;
+
     while (tmp->next != NULL) {
         i++;
         tmp = tmp->next;
@@ -134,10 +140,12 @@ void get_array_of_args(Command cmd, char** args) {
         print_error("Couldn't append string");
     }
 
-    while (tmp->next != NULL) {
-        args[i++] = tmp->arg;
-        tmp = tmp->next;
-    }
+    if (tmp != NULL)
+        do {
+            args[i++] = tmp->arg;
+            tmp = tmp->next;
+        } while (tmp->next != NULL);
+
     args[i] = (char *) 0;
 }
 

@@ -35,7 +35,7 @@ void push_command(CommandQueue queue, Command cmd);
 
 Command pull_command(CommandQueue queue);
 
-Command add_command(char *command);
+Command init_command(char *command);
 
 void append_arg(Command command, char *arg);
 int execute_command(Command command);
