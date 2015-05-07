@@ -127,7 +127,7 @@ void get_array_of_args(Command cmd, char** args) {
      * */
     char* path = "/bin/";
     if((args[0] = malloc(strlen(cmd->cmd) + strlen(path) +1)) != NULL) {
-        args[0][0] = '\0';   // ensures the memory is an empty string
+        args[0][0] = '\0';
         strcat(args[0], path);
         strcat(args[0], cmd->cmd);
     } else {

@@ -34,6 +34,7 @@ int main(void) {
     /*Declaration commands variables*/
     Command cmd = NULL;
     int amp     = 0;
+    int wrong_input = 0;
     /*CommandQueue cmdQ = init_queue();*/
 
 
@@ -81,45 +82,32 @@ int main(void) {
                     break;
                 };
                 case T_BAR:
-                    printf("T_BAR \n");
+                    /*
+                     * In Queue Speichern
+                     * */
                     break;
                 case T_AMP:
                     amp = 1;
-                    break;
-                case T_SEMI:
-                    printf("T_SEMI \n");
-                    break;
-                case T_GT:
-                    printf("T_GT \n");
-                    break;
-                case T_GTGT:
-                    printf("T_GTGT \n");
-                    break;
-                case T_MISSQUOTE:
-                    printf("T_MISSQUOTE\n");
-                    break;
-                case T_LT:
-                    printf("T_LT \n");
                     break;
                 case T_NL:
                     goon = FALSE;
                     break;
                 case T_NULL:
-                    printf("T_NULL \n");
                     goon = FALSE;
                     break;
-                case T_EOF:          /* wird von yylex nicht erkannt */
-                    printf("T_EOF \n");
-                    break;
                 default:
-                    printf("unknown token %s\n", word);
-                    exit(1);
+                    wrong_input = 1;
+                    break;
             }
         }
-        if (cmd != NULL) {
+        if (cmd != NULL && wrong_input != 1) {
             execute_commandp(cmd, amp);
             free_cmd(cmd);
             cmd = NULL;
+        }
+        if (wrong_input == 1 && strlen(word) >= 1){
+            printf("Unknown command or wrong usage! \n");
+            wrong_input = 0;
         }
 
         /*
