@@ -109,8 +109,9 @@ int execute_command(Command command) {
 int get_arg_list_length(ArgList list) {
     int i = 0;
     ArgList tmp = list;
-    if (tmp == NULL)
+    if (tmp == NULL) {
         return 0;
+    }
 
     while (tmp->next != NULL) {
         i++;
@@ -118,6 +119,21 @@ int get_arg_list_length(ArgList list) {
     }
 
     return i;
+}
+
+char *append_dir(char *cmd) {
+    char* path = "/bin/";
+    char* append;
+
+    if((append = malloc(strlen(cmd) + strlen(path) +1)) != NULL) {
+        append[0] = '\0';
+        strcat(append, path);
+        strcat(append, cmd);
+    } else {
+        print_error("Couldn't append string");
+    }
+
+    return append;
 }
 
 void get_array_of_args(Command cmd, char** args) {
@@ -128,17 +144,8 @@ void get_array_of_args(Command cmd, char** args) {
 
     int i = 1;
     ArgList tmp = cmd->args;
-    /*
-     * creating full path
-     * */
-    char* path = "/bin/";
-    if((args[0] = malloc(strlen(cmd->cmd) + strlen(path) +1)) != NULL) {
-        args[0][0] = '\0';
-        strcat(args[0], path);
-        strcat(args[0], cmd->cmd);
-    } else {
-        print_error("Couldn't append string");
-    }
+    args[0]     = append_dir(cmd->cmd);
+    printf("%s", args[0]);
 
     if (tmp != NULL)
         do {
@@ -200,12 +207,14 @@ void free_args(ArgList list) {
 /*
  * DEBUGGING
  * */
-void debug_command(Command cmd, char** args) {
+void debug_command(Command cmd) {
     int i;
-    printf("-%s", cmd->cmd);
-    for ( i = 0; i <= get_arg_list_length(cmd->args); i++) {
-        printf("-%s\n", args[i]);
-    }
+    ArgList l = cmd->args;
+    printf("-%s\n", cmd->cmd);
+    do {
+        printf("\t-%s\n", l->arg);
+        l = l->next;
+    } while(l->next != NULL);
 }
 
 void print_error(char* error_string) {
