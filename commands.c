@@ -9,16 +9,19 @@ Command init_command(char *command) {
 
 void append_arg(Command command, char *arg) {
     ArgList list = command->args;
-    if (list != NULL) {
+
+    ArgList newElement = (ArgList) malloc(sizeof(struct args_struct));
+    newElement->arg = (char *) malloc(strlen(arg) +1);
+    strcpy(newElement->arg, arg);
+
+    if (list == NULL)
+        command->args = newElement;
+    else {
         while (list->next != NULL) {
             list = list->next;
         }
-    } else {
-        command->args = (ArgList) malloc(sizeof(struct args_struct));
-        list = command->args;
+        list->next = newElement;
     }
-    list->arg = (char *) malloc(strlen(arg) + 1);
-    strcpy(list->arg, arg);
 }
 
 CommandQueue init_queue() {
