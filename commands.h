@@ -31,20 +31,25 @@ typedef struct args_struct* ArgList;
 typedef struct command_struct* Command;
 typedef struct command_queue_struct* CommandQueue;
 
+/*
+ * Commands Queue
+ * */
 void push_command(CommandQueue queue, Command cmd);
-
 Command pull_command(CommandQueue queue);
+int is_command_queue_empty(CommandQueue queue);
 
+/*
+ * Commands
+ * */
 Command init_command(char *command);
-
 void append_arg(Command command, char *arg);
+
+/*
+ * Execution
+ * */
 int execute_command(Command command);
 void execute_commandp(Command cmd, int amp);
 void execute_command_process(Command command, int amp, int input, int output);
-
-Command pull_command(CommandQueue queue);
-CommandQueue init_queue();
-int is_command_queue_empty(CommandQueue queue);
 
 /*
  * Speicherverwaltung

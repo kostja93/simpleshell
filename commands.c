@@ -24,26 +24,26 @@ void append_arg(Command command, char *arg) {
     }
 }
 
-CommandQueue init_queue() {
-    CommandQueue result = malloc(sizeof(struct command_queue_struct));
-    result->cmd         = malloc(sizeof(struct command_struct));
-    result->next        = NULL;
-
-    return result;
-}
-
 void push_command(CommandQueue queue, Command cmd) {
-    CommandQueue q = init_queue();
-    q->cmd = malloc(sizeof(struct command_struct));
-    memcpy(q->cmd, cmd, sizeof(struct command_struct));
+    if (queue == NULL)
+        print_error("invalid queue given");
+    if (cmd == NULL)
+        print_error("invalid cmd given");
 
+    CommandQueue newQ = (CommandQueue) malloc(sizeof(struct command_queue_struct));
+    newQ->cmd = cmd;
     CommandQueue tmpQ = queue;
+
+    if (tmpQ->cmd == NULL) {
+        tmpQ->cmd = cmd;
+        return;
+    }
 
     while (tmpQ->next != NULL) {
         tmpQ = tmpQ->next;
     }
 
-    tmpQ->next = q;
+    tmpQ->next = newQ;
 }
 
 Command pull_command(CommandQueue queue) {
@@ -53,11 +53,13 @@ Command pull_command(CommandQueue queue) {
         tmpQ = tmpQ->next;
     }
 
+    queue = tmpQ;
+
     return tmpQ->cmd;
 }
 
 int is_command_queue_empty(CommandQueue queue) {
-    if ( queue->cmd == NULL )
+    if ( queue == NULL || queue->cmd == NULL )
         return 1;
     else
         return 0;
@@ -207,6 +209,9 @@ void execute_commandp(Command cmd, int amp) {
 }
 
 void free_cmd(Command cmd) {
+    if (cmd == NULL)
+        print_error("Not freeable");
+
     if (NULL != cmd->cmd)
         free(cmd->cmd);
     if (NULL != cmd->args)
@@ -215,6 +220,9 @@ void free_cmd(Command cmd) {
 }
 
 void free_args(ArgList list) {
+    if (list == NULL)
+        print_error("Not freeable");
+
     if (NULL != list->arg)
         free(list->arg);
     if (list->next != NULL)

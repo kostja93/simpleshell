@@ -36,7 +36,7 @@ int main(void) {
     int amp     = 0;
     int wrong_input = 0;
     int word_count = 0;
-    /*CommandQueue cmdQ = init_queue();*/
+    CommandQueue cmdQ = (CommandQueue) malloc(sizeof(struct command_queue_struct));
 
 
     /* Schleife ueber alle Eingabezeilen    */
@@ -84,9 +84,10 @@ int main(void) {
                     break;
                 };
                 case T_BAR:
-                    /*
-                     * In Queue Speichern
-                     * */
+                    if (cmd != NULL && cmdQ != NULL)
+                        push_command(cmdQ, cmd);
+                    else
+                        printf("\nInvalid usage of |\n");
                     break;
                 case T_AMP:
                     amp = 1;
@@ -103,9 +104,13 @@ int main(void) {
                     break;
             }
         }
-
-        if (cmd != NULL && wrong_input != 1) {
-            execute_commandp(cmd, amp);
+        push_command(cmdQ, cmd);
+        if ( wrong_input != 1 ) {
+            while (cmdQ->next != NULL){
+                cmd = cmdQ->cmd;
+                execute_commandp(cmd, amp);
+                cmdQ = cmdQ->next;
+            }
             //free_cmd(cmd);
             cmd = NULL;
         }
