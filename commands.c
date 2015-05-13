@@ -64,8 +64,15 @@ int is_command_queue_empty(CommandQueue queue) {
 }
 
 int execute_command(Command command) {
+    if (command == NULL)
+        print_error("Uninitialzied use of command in execute_command");
+
     char *cmd = command->cmd;
     int executed = 0;
+
+    if (cmd == NULL) {
+        print_error("No command given in execute_command");
+    }
 
     if (strcmp(cmd, "myecho") == 0){
         ArgList l = command->args;
@@ -80,7 +87,7 @@ int execute_command(Command command) {
     }
     if (strcmp(cmd, "exit") == 0){
         int errorCode = 0;
-        if (command->args->arg != NULL)
+        if (command->args != NULL && command->args->arg != NULL)
             errorCode = atoi(command->args->arg);
 
         exit(errorCode);
@@ -124,7 +131,7 @@ int get_arg_list_length(ArgList list) {
     return i;
 }
 
-char *append_dir(char *cmd) {
+char* append_dir(char *cmd) {
     char* path = "/bin/";
     char* append;
 
@@ -186,6 +193,9 @@ void execute_command_process(Command command, int amp, int input, int output) {
 }
 
 void execute_commandp(Command cmd, int amp) {
+    if (cmd == NULL)
+        print_error("Uninitialized Command in execute_commandp");
+
     if (execute_command(cmd) == 0) {
         execute_command_process(cmd, amp, 0, 1);
     }

@@ -103,7 +103,7 @@ int main(void) {
                     break;
             }
         }
-        debug_command(cmd);
+
         if (cmd != NULL && wrong_input != 1) {
             execute_commandp(cmd, amp);
             //free_cmd(cmd);
