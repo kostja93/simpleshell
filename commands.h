@@ -58,5 +58,6 @@ void free_args(ArgList list);
  * */
 void debug_command(Command cmd);
 void print_error(char* error_string);
+void debug_arg_array(char** args);
 
 #endif /*SMPSH_BASE_COMMANDS_H*/

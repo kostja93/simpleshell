@@ -117,8 +117,9 @@ int execute_command(Command command) {
 }
 
 int get_arg_list_length(ArgList list) {
-    int i = 0;
+    int i = 1;
     ArgList tmp = list;
+
     if (tmp == NULL) {
         return 0;
     }
@@ -134,6 +135,9 @@ int get_arg_list_length(ArgList list) {
 char* append_dir(char *cmd) {
     char* path = "/bin/";
     char* append;
+
+    if (cmd == NULL)
+        print_error("No valid command given in append_dir");
 
     if((append = malloc(strlen(cmd) + strlen(path) +1)) != NULL) {
         append[0] = '\0';
@@ -155,13 +159,14 @@ void get_array_of_args(Command cmd, char** args) {
     int i = 1;
     ArgList tmp = cmd->args;
     args[0]     = append_dir(cmd->cmd);
-    printf("%s", args[0]);
 
-    if (tmp != NULL)
-        do {
+    if (tmp != NULL) {
+        args[i++] = tmp->arg;
+        while (tmp->next != NULL) {
             args[i++] = tmp->arg;
             tmp = tmp->next;
-        } while (tmp->next != NULL);
+        }
+    }
 
     args[i] = (char *) 0;
 }
@@ -228,6 +233,13 @@ void debug_command(Command cmd) {
         printf("\t-%s\n", l->arg);
         l = l->next;
     } while(l->next != NULL);
+}
+
+void debug_arg_array(char** args) {
+    int i = 0;
+    printf("Your arguments:\n");
+    while (args[i] != (char) 0)
+        printf("{%s}\n",args[i++]);
 }
 
 void print_error(char* error_string) {
