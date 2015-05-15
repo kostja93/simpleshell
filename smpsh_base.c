@@ -36,7 +36,7 @@ int main(void) {
     int amp     = 0;
     int wrong_input = 0;
     int word_count = 0;
-    CommandQueue cmdQ = (CommandQueue) malloc(sizeof(struct command_queue_struct));
+    CommandQueue cmdQ;
 
 
     /* Schleife ueber alle Eingabezeilen    */
@@ -59,6 +59,7 @@ int main(void) {
          */
 
         goon = TRUE;
+        cmdQ = (CommandQueue) malloc(sizeof(struct command_queue_struct));
         while (goon) {
 
             /*
@@ -83,12 +84,14 @@ int main(void) {
                     }
                     break;
                 };
-                case T_BAR:
-                    if (cmd != NULL && cmdQ != NULL)
+                case T_BAR: {
+                    if (cmd != NULL && cmdQ != NULL) {
                         push_command(cmdQ, cmd);
-                    else
+                        cmd = NULL;
+                    } else
                         printf("\nInvalid usage of |\n");
                     break;
+                };
                 case T_AMP:
                     amp = 1;
                     break;
@@ -105,14 +108,10 @@ int main(void) {
             }
         }
         push_command(cmdQ, cmd);
-        if ( wrong_input != 1 ) {
-            while (cmdQ->next != NULL){
-                cmd = cmdQ->cmd;
-                execute_commandp(cmd, amp);
-                cmdQ = cmdQ->next;
-            }
-            //free_cmd(cmd);
-            cmd = NULL;
+        if ( wrong_input != 1 && cmd != NULL && cmdQ != NULL) {
+            execute_queue(cmdQ, amp);
+            cmd  = NULL;
+            cmdQ = NULL;
         }
         if (wrong_input == 1){
             printf("Unknown command or wrong usage! \n");

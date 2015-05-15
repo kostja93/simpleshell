@@ -208,6 +208,24 @@ void execute_commandp(Command cmd, int amp) {
     }
 }
 
+void execute_queue(CommandQueue cmds, amp) {
+    if (cmds == NULL)
+        print_error("Unvalid queue given for execution");
+
+    int fd[2];
+    fd[0] = 0;
+    fd[1] = 1;
+    Command cmd;
+
+    do {
+        if (cmds->cmd != NULL) {
+            cmd = cmds->cmd;
+            execute_command_process(cmd, amp, fd[0], fd[1]);
+        }
+        cmds = cmds->next;
+    } while (cmds != NULL);
+}
+
 void free_cmd(Command cmd) {
     if (cmd == NULL)
         print_error("Not freeable");
