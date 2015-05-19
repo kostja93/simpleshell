@@ -50,7 +50,7 @@ void append_arg(Command command, char *arg);
 int execute_command(Command command);
 void execute_commandp(Command cmd, int amp);
 void execute_command_process(Command command, int amp, int input, int output);
-void execute_queue(CommandQueue cmds, amp);
+void execute_queue(CommandQueue cmds, int amp);
 
 /*
  * Speicherverwaltung

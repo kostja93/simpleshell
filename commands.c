@@ -180,14 +180,18 @@ void execute_command_process(Command command, int amp, int input, int output) {
     if (pid == 0) {
         char *args[get_arg_list_length(command->args) + 2];
         get_array_of_args(command, args);
-
+        printf("FDS: %d; %d\n", input, output);
         if (input != 0) {
-            if ( dup2(input, 0) < 0 )
+            if ( dup2(input, 1) < 0 ){
+                printf("Changed to %d\n", input);
                 print_error("Error while changing stdin");
+            }
         }
         if (output != 1) {
-            if ( dup2(output, 1) < 0)
+            if ( dup2(output, 1) < 0){
+                printf("Changed to %d\n", input);
                 print_error("Error while changing stdout");
+            }
         }
 
         if (execvp(command->cmd, args) == -1 )
@@ -208,19 +212,29 @@ void execute_commandp(Command cmd, int amp) {
     }
 }
 
-void execute_queue(CommandQueue cmds, amp) {
+void execute_queue(CommandQueue cmds, int amp) {
     if (cmds == NULL)
         print_error("Unvalid queue given for execution");
 
-    int fd[2];
-    fd[0] = 0;
-    fd[1] = 1;
+    int fd[2], input, output;
     Command cmd;
+    output = 0;
 
     do {
         if (cmds->cmd != NULL) {
             cmd = cmds->cmd;
-            execute_command_process(cmd, amp, fd[0], fd[1]);
+            if (execute_command(cmd) == 0){
+                input = output;
+                pipe(fd);
+
+                if (cmds->next == NULL)
+                    output = 1;
+                else
+                    output = fd[0];
+
+                execute_command_process(cmd, amp, input, output);
+                output = fd[1];
+            }
         }
         cmds = cmds->next;
     } while (cmds != NULL);
