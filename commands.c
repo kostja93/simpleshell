@@ -25,10 +25,14 @@ void append_arg(Command command, char *arg) {
 }
 
 void push_command(CommandQueue queue, Command cmd) {
-    if (queue == NULL)
+    if (queue == NULL) {
         print_error("invalid queue given");
-    if (cmd == NULL)
+        return;
+    }
+    if (cmd == NULL) {
         print_error("invalid cmd given");
+        return;
+    }
 
     CommandQueue newQ = (CommandQueue) malloc(sizeof(struct command_queue_struct));
     newQ->cmd = cmd;
@@ -66,14 +70,17 @@ int is_command_queue_empty(CommandQueue queue) {
 }
 
 int execute_command(Command command) {
-    if (command == NULL)
+    if (command == NULL) {
         print_error("Uninitialzied use of command in execute_command");
+        return 0;
+    }
 
     char *cmd = command->cmd;
     int executed = 0;
 
     if (cmd == NULL) {
         print_error("No command given in execute_command");
+        return 0;
     }
 
     if (strcmp(cmd, "myecho") == 0){
@@ -138,8 +145,10 @@ char* append_dir(char *cmd) {
     char* path = "/bin/";
     char* append;
 
-    if (cmd == NULL)
+    if (cmd == NULL) {
         print_error("No valid command given in append_dir");
+        return NULL;
+    }
 
     if((append = malloc(strlen(cmd) + strlen(path) +1)) != NULL) {
         append[0] = '\0';
@@ -147,16 +156,21 @@ char* append_dir(char *cmd) {
         strcat(append, cmd);
     } else {
         print_error("Couldn't append string");
+        return NULL;
     }
 
     return append;
 }
 
 void get_array_of_args(Command cmd, char** args) {
-    if (NULL == cmd)
+    if (NULL == cmd) {
         print_error("Unvalid command given");
-    if (NULL == args)
+        return;
+    }
+    if (NULL == args) {
         print_error("Unvalid array for char array given");
+        return;
+    }
 
     int i = 1;
     ArgList tmp = cmd->args;
@@ -182,20 +196,24 @@ void execute_command_process(Command command, int amp, int input, int output) {
         get_array_of_args(command, args);
         printf("FDS: %d; %d\n", input, output);
         if (input != 0) {
-            if ( dup2(input, 1) < 0 ){
+            if ( dup2(input, 0) < 0 ){
                 printf("Changed to %d\n", input);
                 print_error("Error while changing stdin");
+                return;
             }
         }
         if (output != 1) {
             if ( dup2(output, 1) < 0){
                 printf("Changed to %d\n", input);
                 print_error("Error while changing stdout");
+                return;
             }
         }
 
-        if (execvp(command->cmd, args) == -1 )
+        if (execvp(command->cmd, args) == -1 ){
             print_error("Error while creating new process");
+            return;
+        }
     } else {
         if ( amp == 0 ) {
             waitpid(pid, &status, 0);
@@ -204,8 +222,10 @@ void execute_command_process(Command command, int amp, int input, int output) {
 }
 
 void execute_commandp(Command cmd, int amp) {
-    if (cmd == NULL)
+    if (cmd == NULL) {
         print_error("Uninitialized Command in execute_commandp");
+        return;
+    }
 
     if (execute_command(cmd) == 0) {
         execute_command_process(cmd, amp, 0, 1);
@@ -213,8 +233,10 @@ void execute_commandp(Command cmd, int amp) {
 }
 
 void execute_queue(CommandQueue cmds, int amp) {
-    if (cmds == NULL)
+    if (cmds == NULL) {
         print_error("Unvalid queue given for execution");
+        return;
+    }
 
     int fd[2], input, output;
     Command cmd;
@@ -241,8 +263,10 @@ void execute_queue(CommandQueue cmds, int amp) {
 }
 
 void free_cmd(Command cmd) {
-    if (cmd == NULL)
+    if (cmd == NULL) {
         print_error("Not freeable");
+        return;
+    }
 
     if (NULL != cmd->cmd)
         free(cmd->cmd);
@@ -252,8 +276,10 @@ void free_cmd(Command cmd) {
 }
 
 void free_args(ArgList list) {
-    if (list == NULL)
+    if (list == NULL) {
         print_error("Not freeable");
+        return;
+    }
 
     if (NULL != list->arg)
         free(list->arg);
@@ -284,5 +310,5 @@ void debug_arg_array(char** args) {
 
 void print_error(char* error_string) {
     printf("\n\n%s!\n", error_string);
-    exit(-1);
+    //exit(-1);
 }
