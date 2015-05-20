@@ -33,7 +33,6 @@ void push_command(CommandQueue queue, Command cmd) {
         return;
     }
     if (cmd == NULL) {
-        print_error("invalid cmd given");
         return;
     }
 
@@ -210,14 +209,12 @@ void execute_command_process(Command command, int amp, int input, int output) {
 
         if (input != 0) {
             if ( dup2(input, 0) < 0 ){
-                printf("Changed to %d\n", input);
                 print_error("Error while changing stdin");
                 return;
             }
         }
         if (output != 1) {
             if ( dup2(output, 1) < 0){
-                printf("Changed to %d\n", input);
                 print_error("Error while changing stdout");
                 return;
             }
@@ -302,6 +299,21 @@ void free_args(ArgList list) {
     if (list->next != NULL)
         free_args(list->next);
     free(list);
+}
+
+void free_queue(CommandQueue queue) {
+    if (queue == NULL) {
+        print_error("Not valid queue for freeing");
+        return;
+    }
+
+    if (queue->cmd != NULL)
+        free_cmd(queue->cmd);
+
+    if (queue->next != NULL)
+        free_queue(queue->next);
+
+    free(queue);
 }
 
 /*

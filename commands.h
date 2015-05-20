@@ -60,6 +60,7 @@ void execute_queue(CommandQueue cmds, int amp);
 
 void free_cmd(Command cmd);
 void free_args(ArgList list);
+void free_queue(CommandQueue queue);
 
 /*
  * DEBUGGING
