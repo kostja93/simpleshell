@@ -207,14 +207,7 @@ void execute_command_process(Command command, int amp, int input, int output) {
             return;
         }
         get_array_of_args(command, args);
-        /*
-         * Debugging
-         * */
-        char *string = "Hallo Welt";
-        write(input, string, strlen(string));
-        /*
-         * End
-         * */
+
         if (input != 0) {
             if ( dup2(input, 0) < 0 ){
                 printf("Changed to %d\n", input);
@@ -235,9 +228,6 @@ void execute_command_process(Command command, int amp, int input, int output) {
             return;
         }
     } else {
-        char *string = malloc(strlen("Hallo Welt"));
-        read(output, string, strlen(string));
-        printf("%s",string);
         if ( amp == 0 ) {
             waitpid(pid, &status, 0);
         }
