@@ -25,6 +25,9 @@ void append_arg(Command command, char *arg) {
 }
 
 void push_command(CommandQueue queue, Command cmd) {
+    CommandQueue newQ;
+    CommandQueue tmpQ;
+
     if (queue == NULL) {
         print_error("invalid queue given");
         return;
@@ -34,9 +37,9 @@ void push_command(CommandQueue queue, Command cmd) {
         return;
     }
 
-    CommandQueue newQ = (CommandQueue) malloc(sizeof(struct command_queue_struct));
+    newQ = (CommandQueue) malloc(sizeof(struct command_queue_struct));
     newQ->cmd = cmd;
-    CommandQueue tmpQ = queue;
+    tmpQ = queue;
 
     if (tmpQ->cmd == NULL) {
         tmpQ->cmd = cmd;
@@ -70,13 +73,17 @@ int is_command_queue_empty(CommandQueue queue) {
 }
 
 int execute_command(Command command) {
+
+    char *cmd;
+    int executed;
+
     if (command == NULL) {
         print_error("Uninitialzied use of command in execute_command");
         return 0;
     }
 
-    char *cmd = command->cmd;
-    int executed = 0;
+    cmd = command->cmd;
+    executed = 0;
 
     if (cmd == NULL) {
         print_error("No command given in execute_command");
@@ -163,6 +170,10 @@ char* append_dir(char *cmd) {
 }
 
 void get_array_of_args(Command cmd, char** args) {
+    int i;
+    ArgList tmp;
+    i = 1;
+    tmp = cmd->args;
     if (NULL == cmd) {
         print_error("Unvalid command given");
         return;
@@ -171,9 +182,6 @@ void get_array_of_args(Command cmd, char** args) {
         print_error("Unvalid array for char array given");
         return;
     }
-
-    int i = 1;
-    ArgList tmp = cmd->args;
     args[0]     = append_dir(cmd->cmd);
 
     if (tmp != NULL) {
@@ -192,7 +200,11 @@ void execute_command_process(Command command, int amp, int input, int output) {
     int pid = fork();
 
     if (pid == 0) {
-        char *args[get_arg_list_length(command->args) + 2];
+        char *args[MAX_ARGS];
+        if (get_arg_list_length(command->args) + 2 > MAX_ARGS) {
+            print_error("To many arguments");
+            return;
+        }
         get_array_of_args(command, args);
         printf("FDS: %d; %d\n", input, output);
         if (input != 0) {
@@ -233,13 +245,16 @@ void execute_commandp(Command cmd, int amp) {
 }
 
 void execute_queue(CommandQueue cmds, int amp) {
+    int fd[2];
+    int input;
+    int output;
+    Command cmd;
+
     if (cmds == NULL) {
         print_error("Unvalid queue given for execution");
         return;
     }
 
-    int fd[2], input, output;
-    Command cmd;
     output = 0;
 
     do {
@@ -292,7 +307,6 @@ void free_args(ArgList list) {
  * DEBUGGING
  * */
 void debug_command(Command cmd) {
-    int i;
     ArgList l = cmd->args;
     printf("-%s\n", cmd->cmd);
     do {
@@ -310,5 +324,4 @@ void debug_arg_array(char** args) {
 
 void print_error(char* error_string) {
     printf("\n\n%s!\n", error_string);
-    //exit(-1);
 }

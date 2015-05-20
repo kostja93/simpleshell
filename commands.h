@@ -8,9 +8,11 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 #define __EXTENSIONS__
-#include <signal.h>
+
+#define MAX_ARGS 32
 
 struct args_struct {
     char *arg;
