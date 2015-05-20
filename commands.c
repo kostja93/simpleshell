@@ -197,16 +197,16 @@ void get_array_of_args(Command cmd, char** args) {
 
 void execute_command_process(Command command, int amp, int input, int output) {
     int status;
-    int pid = fork();
+    int pid;
+    pid = fork();
 
     if (pid == 0) {
         char *args[MAX_ARGS];
-        if (get_arg_list_length(command->args) + 2 > MAX_ARGS) {
+        if ( (get_arg_list_length(command->args) + 2) > MAX_ARGS) {
             print_error("To many arguments");
             return;
         }
         get_array_of_args(command, args);
-        printf("FDS: %d; %d\n", input, output);
         if (input != 0) {
             if ( dup2(input, 0) < 0 ){
                 printf("Changed to %d\n", input);
