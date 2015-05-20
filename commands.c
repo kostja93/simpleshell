@@ -279,6 +279,8 @@ void free_cmd(Command cmd) {
     if (cmd == NULL) {
         print_error("Not freeable");
         return;
+    }else {
+        printf("\tCleaning cmd\n");/*DEBUGGING*/
     }
 
     if (NULL != cmd->cmd)
@@ -292,6 +294,8 @@ void free_args(ArgList list) {
     if (list == NULL) {
         print_error("Not freeable");
         return;
+    }else {
+        printf("\tCleaning args\n");/*DEBUGGING*/
     }
 
     if (NULL != list->arg)
@@ -305,6 +309,8 @@ void free_queue(CommandQueue queue) {
     if (queue == NULL) {
         print_error("Not valid queue for freeing");
         return;
+    } else {
+        printf("\tCleaning queue\n");/*DEBUGGING*/
     }
 
     if (queue->cmd != NULL)
@@ -321,11 +327,30 @@ void free_queue(CommandQueue queue) {
  * */
 void debug_command(Command cmd) {
     ArgList l = cmd->args;
-    printf("-%s\n", cmd->cmd);
-    do {
-        printf("\t-%s\n", l->arg);
-        l = l->next;
-    } while(l->next != NULL);
+    if (l != NULL && cmd->cmd != NULL) {
+        printf("-%s\n", cmd->cmd);
+
+        do {
+            printf("\t-%s\n", l->arg);
+            l = l->next;
+        } while(l != NULL);
+    } else {
+        printf("No command given to print");
+    }
+}
+
+void debug_commands_queue(CommandQueue cmds) {
+    CommandQueue q;
+    q = cmds;
+    printf("Printing Queue:\n");
+    if (q != NULL)
+        do {
+            debug_command(q->cmd);
+            printf("-----------------\n");
+            q = q->next;
+        } while (q != NULL);
+    else
+        printf("Empty Queue");
 }
 
 void debug_arg_array(char** args) {

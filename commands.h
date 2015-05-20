@@ -68,5 +68,6 @@ void free_queue(CommandQueue queue);
 void debug_command(Command cmd);
 void print_error(char* error_string);
 void debug_arg_array(char** args);
+void debug_commands_queue(CommandQueue cmds);
 
 #endif /*SMPSH_BASE_COMMANDS_H*/

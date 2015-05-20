@@ -109,7 +109,9 @@ int main(void) {
         }
         push_command(cmdQ, cmd);
         if ( wrong_input != 1 && cmd != NULL && cmdQ != NULL) {
+            debug_commands_queue(cmdQ);
             execute_queue(cmdQ, amp);
+            /*free_queue(cmdQ);*/
             cmd  = NULL;
             cmdQ = NULL;
         }
