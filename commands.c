@@ -212,12 +212,14 @@ void execute_command_process(Command command, int amp, int input, int output) {
                 print_error("Error while changing stdin");
                 exit(-1);
             }
+            close(input);
         }
         if (output != STDOUT_FILENO) {
             if ( dup2(output, STDOUT_FILENO) < 0){
                 print_error("Error while changing stdout");
                 exit(-2);
             }
+            close(output);
         }
         if (execvp(command->cmd, args) == -1 ){
             print_error("Error while loading programm");
@@ -227,8 +229,6 @@ void execute_command_process(Command command, int amp, int input, int output) {
         if ( amp == 0 ) {
             waitpid(pid, &status, 0);
         }
-        if (input != 0)
-            close(input);
     }
 }
 
@@ -266,25 +266,31 @@ void execute_queue(CommandQueue cmds, int amp) {
                     return;
                 }
 
-                if (cmds->next == NULL)
-                    output = 1;
+                if (cmds->next == NULL){
+                    output = STDOUT_FILENO;
+                    close(fd[1]);
+                }
                 else
                     output = fd[1];
 
                 execute_command_process(cmd, amp, input, output);
+                if (input != STDIN_FILENO)
+                    close(input);
+                if (output != STDOUT_FILENO)
+                    close(output);
+
                 output = fd[0];
             }
         }
         cmds = cmds->next;
     } while (cmds != NULL);
+    close(output);
 }
 
 void free_cmd(Command cmd) {
     if (cmd == NULL) {
         print_error("Not freeable");
         return;
-    }else {
-        printf("\tCleaning cmd\n");/*DEBUGGING*/
     }
 
     if (NULL != cmd->cmd)
@@ -298,8 +304,6 @@ void free_args(ArgList list) {
     if (list == NULL) {
         print_error("Not freeable");
         return;
-    }else {
-        printf("\tCleaning args\n");/*DEBUGGING*/
     }
 
     if (NULL != list->arg)
@@ -310,11 +314,10 @@ void free_args(ArgList list) {
 }
 
 void free_queue(CommandQueue queue) {
+    return;
     if (queue == NULL) {
         print_error("Not valid queue for freeing");
         return;
-    } else {
-        printf("\tCleaning queue\n");/*DEBUGGING*/
     }
 
     if (queue->cmd != NULL)
