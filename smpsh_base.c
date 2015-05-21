@@ -93,7 +93,7 @@ int main(void) {
                     break;
                 };
                 case T_AMP:
-                    amp = 1;
+                    amp++;
                     break;
                 case T_NL:
                 case T_NULL:
@@ -110,10 +110,14 @@ int main(void) {
         if (NULL != cmd)
             push_command(cmdQ, cmd);
 
-        if ( wrong_input != 1 && cmd != NULL && cmdQ != NULL) {
-            execute_queue(cmdQ, amp);
-            cmd  = NULL;
-            cmdQ = NULL;
+        if (amp <= 1){
+            if ( wrong_input != 1 && cmd != NULL && cmdQ != NULL) {
+                execute_queue(cmdQ, amp);
+                cmd  = NULL;
+                cmdQ = NULL;
+            }
+        } else {
+            print_error("To many &");
         }
         if (wrong_input == 1){
             printf("Unknown command or wrong usage! \n");
