@@ -33,6 +33,7 @@ void push_command(CommandQueue queue, Command cmd) {
         return;
     }
     if (cmd == NULL) {
+        print_error("invalid command given");
         return;
     }
 
@@ -206,28 +207,28 @@ void execute_command_process(Command command, int amp, int input, int output) {
             return;
         }
         get_array_of_args(command, args);
-
-        if (input != 0) {
-            if ( dup2(input, 0) < 0 ){
+        if (input != STDIN_FILENO) {
+            if ( dup2(input, STDIN_FILENO) < 0 ){
                 print_error("Error while changing stdin");
-                return;
+                exit(-1);
             }
         }
-        if (output != 1) {
-            if ( dup2(output, 1) < 0){
+        if (output != STDOUT_FILENO) {
+            if ( dup2(output, STDOUT_FILENO) < 0){
                 print_error("Error while changing stdout");
-                return;
+                exit(-2);
             }
         }
-
         if (execvp(command->cmd, args) == -1 ){
-            print_error("Error while creating new process");
-            return;
+            print_error("Error while loading programm");
+            exit(-3);
         }
     } else {
         if ( amp == 0 ) {
             waitpid(pid, &status, 0);
         }
+        if (input != 0)
+            close(input);
     }
 }
 
@@ -260,15 +261,18 @@ void execute_queue(CommandQueue cmds, int amp) {
             cmd = cmds->cmd;
             if (execute_command(cmd) == 0){
                 input = output;
-                pipe(fd);
+                if( pipe(fd) < 0 ) {
+                    print_error("error while creating pipe");
+                    return;
+                }
 
                 if (cmds->next == NULL)
                     output = 1;
                 else
-                    output = fd[0];
+                    output = fd[1];
 
                 execute_command_process(cmd, amp, input, output);
-                output = fd[1];
+                output = fd[0];
             }
         }
         cmds = cmds->next;
@@ -327,15 +331,16 @@ void free_queue(CommandQueue queue) {
  * */
 void debug_command(Command cmd) {
     ArgList l = cmd->args;
-    if (l != NULL && cmd->cmd != NULL) {
-        printf("-%s\n", cmd->cmd);
-
+    if (cmd->cmd == NULL) {
+        printf("No command given to print\n");
+        return;
+    }
+    printf("-%s\n", cmd->cmd);
+    if (l != NULL) {
         do {
             printf("\t-%s\n", l->arg);
             l = l->next;
         } while(l != NULL);
-    } else {
-        printf("No command given to print");
     }
 }
 
@@ -348,7 +353,7 @@ void debug_commands_queue(CommandQueue cmds) {
             debug_command(q->cmd);
             printf("-----------------\n");
             q = q->next;
-        } while (q != NULL);
+        }while (q != NULL);
     else
         printf("Empty Queue");
 }
@@ -361,5 +366,13 @@ void debug_arg_array(char** args) {
 }
 
 void print_error(char* error_string) {
+    int logfile;
     printf("\n\n%s!\n", error_string);
+
+    logfile = open("smpsh.log", O_WRONLY | O_APPEND);
+    if (logfile > 0) {
+        write(logfile, error_string, strlen(error_string));
+    }
+
+    close(logfile);
 }

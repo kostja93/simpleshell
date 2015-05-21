@@ -85,7 +85,7 @@ int main(void) {
                     break;
                 };
                 case T_BAR: {
-                    if (cmd != NULL && cmdQ != NULL) {
+                    if (cmd != NULL && cmdQ != NULL && cmd->cmd != NULL) {
                         push_command(cmdQ, cmd);
                         cmd = NULL;
                     } else
@@ -107,11 +107,11 @@ int main(void) {
                     break;
             }
         }
-        push_command(cmdQ, cmd);
+        if (NULL != cmd)
+            push_command(cmdQ, cmd);
+
         if ( wrong_input != 1 && cmd != NULL && cmdQ != NULL) {
-            debug_commands_queue(cmdQ);
             execute_queue(cmdQ, amp);
-            /*free_queue(cmdQ);*/
             cmd  = NULL;
             cmdQ = NULL;
         }
