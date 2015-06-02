@@ -35,6 +35,7 @@
 
 
     #define LISTLENGTH 32
+    #define _MYFREEBSD_ 1
 
     /* FreeBSD */
     #ifdef _MYFREEBSD_
