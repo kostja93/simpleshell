@@ -1,4 +1,4 @@
-#!/bin/tsch
+#!/bin/bash
 #Script for rebuildung
 #Make sure to run
 #	$chmod +x makeShell.sh
