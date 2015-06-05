@@ -128,16 +128,6 @@ int execute_command(Command command) {
         kill(errorCode, SIGKILL);
         executed = 1;
     }
-    if (strcmp(cmd, "sig_install") == 0) {
-        //TODO implement function for installing new signal handles
-        printf("sig_install");
-        executed = 1;
-    }
-    if (strcmp(cmd, "sig_uninstall") == 0) {
-        //TODO implement function for uninstalling signal handles
-        printf("sig_unistall");
-        executed = 1;
-    }
 
     return executed;
 }

@@ -76,4 +76,3 @@ int gettoken( char *w, unsigned int len)
   
   return t;
 }
-
