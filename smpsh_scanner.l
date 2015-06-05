@@ -32,7 +32,7 @@
 
 %array
 
-yyword             ([a-zA-Z_0-9\:\+\-\?\%\$\.\*\(\)\{\}\=/\,\!\#ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½]+)
+yyword             ([a-zA-Z_0-9\:\+\-\?\%\$\.\*\(\)\{\}\=/\,\!\#äÄöÖüÜß]+)
 yyquot             (\"[^\"\n]*\")
 
 %%
@@ -58,7 +58,7 @@ int gettoken( char *w, unsigned int len)
 
   t = yylex();  /* diese Routine wird von lex (bzw. flex) generiert */
 
-  /* yytext = zeiger auf den zurï¿½ckgegebenen Text */
+  /* yytext = zeiger auf den zurückgegebenen Text */
 
   switch( t ){
   case T_QUOTE:
@@ -76,3 +76,4 @@ int gettoken( char *w, unsigned int len)
   
   return t;
 }
+
