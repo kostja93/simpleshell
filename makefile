@@ -1,17 +1,40 @@
-CC = gcc  #49
+#!/bin/tsch
+#Script for rebuildung
+#Make sure to run
+#	$chmod +x makeShell.sh
+#before using the script(makes the file executable)
 
-CFLAGS = -Wall -Wextra -pedantic -Wconversion -m64
+#Start script
+echo "########################################"
+echo "Build shell begins"
+echo "########################################"
 
+#Create lex.yy.c
+flex "smpsh_scanner.l"
+echo "Build new Lexer"
 
-%.o: %.c
-	$(CC) -c -o $@ $(CFLAGS) $<
+#Compile lex.yy.c
+gcc -c lex.yy.c
+echo "Compiled LEXER"
 
-# flex:$(flex smpsh_scanner.l)
+#Compile helper.c
+gcc -c helper.c
+echo "Compiled CI"
 
-#lex.yy.o: lex.yy.c
-#	$(CC) -c lex.yy.c
+#Compile commands.c
+gcc -c commands.c
+echo "Compiled LIST"
 
-my_os: lex.yy.o commands.o  helper.o smpsh_base.o
-	$(CC) -o smpsh smpsh_base.o helper.o commands.o lex.yy.o -lfl
+#Create smpsh_scanner.c
+flex -osmpsh_scanner.c smpsh_scanner.l
+echo "Build new smpsh_scanner.c"
 
+#Build and bind files
+#gcc helper.o
+#echo "Bind CI"
+gcc -o smpsh_base smpsh_base.c helper.o commands.o lex.yy.o -lfl
+echo "Build and bind"
 
+#start shell
+echo "start smpsh via valgrind"
+valgrind --leak-check=full --log-file=logfile.txt ./smpsh_base
