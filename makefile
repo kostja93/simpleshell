@@ -26,16 +26,16 @@ gcc -c commands.c
 echo "Compiled LIST"
 
 #Create smpsh_scanner.c
-flex -osmpsh_scanner.c smpsh_scanner.l
-echo "Build new smpsh_scanner.c"
+#flex -osmpsh_scanner.c smpsh_scanner.l
+#echo "Build new smpsh_scanner.c"
 
 #Build and bind files
 #gcc helper.o
 #echo "Bind CI"
-gcc -o smpsh_base smpsh_base.c helper.o commands.o lex.yy.o -lfl
+gcc -o smpsh smpsh_base.c helper.o commands.o lex.yy.o -lfl
 echo "Build and bind"
 
 #start shell
 echo "start smpsh via valgrind"
 #valgrind --leak-check=full --log-file=logfile.txt
-./smpsh_base
+./smpsh
