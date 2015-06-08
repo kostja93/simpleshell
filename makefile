@@ -37,4 +37,5 @@ echo "Build and bind"
 
 #start shell
 echo "start smpsh via valgrind"
-valgrind --leak-check=full --log-file=logfile.txt ./smpsh_base
+#valgrind --leak-check=full --log-file=logfile.txt
+./smpsh_base
