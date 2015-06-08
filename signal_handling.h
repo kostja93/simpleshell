@@ -49,7 +49,6 @@ char *signallist[] = { " ",\
 "SIGTTIN",  "SIGTTOU", 	"SIGURG",   "SIGXCPU",  "SIGXFSZ",   /* 21 - 25 */
 "SIGVTALRM","SIGPROF", 	"SIGWINCH", "SIGIO",    "SIGPWR",    /* 26 - 30 */
 "SIGSYS",   "SIGURTMIN", NULL                            };  /* 31 - 32 */
-#endif
 
 void sig_getlist();
 

@@ -36,7 +36,7 @@ echo "Compiled LIST"
 #Build and bind files
 #gcc helper.o
 #echo "Bind CI"
-gcc -o smpsh smpsh_base.c helper.o commands.o lex.yy.o -lfl
+gcc -o smpsh smpsh_base.c helper.o signal_handling.o commands.o lex.yy.o -lfl
 echo "Build and bind"
 
 #start shell
