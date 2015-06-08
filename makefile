@@ -22,12 +22,12 @@ gcc -c helper.c
 echo "Compiled CI"
 
 #Compile signals
-gcc -c signal_handling.c
-echo "Compiled signals"
+#gcc -c signal_handling.c
+#echo "Compiled signals"
 
 #Compile commands.c
 gcc -c commands.c
-echo "Compiled LIST"
+echo "Compiled commands"
 
 #Create smpsh_scanner.c
 #flex -osmpsh_scanner.c smpsh_scanner.l
@@ -36,7 +36,7 @@ echo "Compiled LIST"
 #Build and bind files
 #gcc helper.o
 #echo "Bind CI"
-gcc -o smpsh smpsh_base.c helper.o signal_handling.o commands.o lex.yy.o -lfl
+gcc -o smpsh smpsh_base.c helper.o commands.o lex.yy.o -lfl
 echo "Build and bind"
 
 #start shell

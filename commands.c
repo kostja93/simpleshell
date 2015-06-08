@@ -135,7 +135,8 @@ int execute_command(Command command) {
         signal    = arguments->arg;
         arguments = arguments->next;
         handler   = arguments->arg;
-        signalValue = sig_getsignalnumber(signal);
+//        signalValue = sig_getsignalnumber(signal);
+        signalValue = 1;
         printf("Installing new handler %s for %s (%d)\n", handler, signal, signalValue);
         executed = 1;
     }
