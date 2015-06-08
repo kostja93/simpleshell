@@ -128,6 +128,18 @@ int execute_command(Command command) {
         kill(errorCode, SIGKILL);
         executed = 1;
     }
+    if (strcmp(cmd, "sig_install") == 0) {
+        ArgList arguments = command->args;
+        char *signal, *handler;
+        int signalValue;
+        signal    = arguments->arg;
+        arguments = arguments->next;
+        handler   = arguments->arg;
+        //signalValue = sig_getsignalnumber(signal);
+        signalValue = 1;
+        printf("Installing new handler %s for %s (%d)\n", handler, signal, signalValue);
+        executed = 1;
+    }
 
     return executed;
 }
@@ -284,7 +296,6 @@ void execute_queue(CommandQueue cmds, int amp) {
         }
         cmds = cmds->next;
     } while (cmds != NULL);
-    close(output);
 }
 
 void free_cmd(Command cmd) {

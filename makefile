@@ -21,6 +21,10 @@ echo "Compiled LEXER"
 gcc -c helper.c
 echo "Compiled CI"
 
+#Compile signals
+gcc -c signal_handling.c
+echo "Compiled signals"
+
 #Compile commands.c
 gcc -c commands.c
 echo "Compiled LIST"
