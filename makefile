@@ -17,26 +17,10 @@ echo "Build new Lexer"
 gcc -c lex.yy.c
 echo "Compiled LEXER"
 
-#Compile helper.c
-gcc -c helper.c
-echo "Compiled CI"
-
-#Compile signals
-#gcc -c signal_handling.c
-#echo "Compiled signals"
-
-#Compile commands.c
-gcc -c commands.c
-echo "Compiled commands"
-
-#Create smpsh_scanner.c
-#flex -osmpsh_scanner.c smpsh_scanner.l
-#echo "Build new smpsh_scanner.c"
-
 #Build and bind files
 #gcc helper.o
 #echo "Bind CI"
-gcc -o smpsh smpsh_base.c helper.o commands.o lex.yy.o -lfl
+gcc -g -Wall -o smpsh smpsh_base.c helper.h helper.c commands.h commands.c signals.h signals.c lex.yy.o -lfl
 echo "Build and bind"
 
 #start shell

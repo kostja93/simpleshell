@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <fcntl.h>
+#include "signals.h"
 
 #define __EXTENSIONS__
 
