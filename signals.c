@@ -41,6 +41,8 @@ char *signallist[] = { " ",\
 "SIGSYS",   "SIGURTMIN", NULL                            };  /* 31 - 32 */
 #endif
 
+struct sigaction *oldHandler;
+
 void sig_getlist()
 {
     /* lists available signals */
@@ -78,21 +80,25 @@ void installSignalHandler(int signalId, HandlerFunction handler) {
     struct sigaction new_action, old_action;
     new_action.sa_handler = handler;
     sigemptyset(&new_action.sa_mask);
-    new_action.sa_flags = 0;
+    new_action.sa_flags = SA_RESTART;
 
     sigaction(signalId, NULL, &old_action);
     sigaction(signalId, &new_action, NULL);
+
+    oldHandler[signalId] = old_action;
 }
 
 void uninstallSignalHandler(int signalId) {
-    struct sigaction old_action;
+    sigaction(signalId, &oldHandler[signalId], NULL);
+}
 
-    sigaction(signalId, NULL, &old_action);
+void initOldHandlerList() {
+    oldHandler = malloc(sizeof(struct sigaction) * LISTLENGTH);
 }
 
 void sayHello(int signal) {
     printf("Hello World!\n");
 }
 void printThatSignalWasCalled(int signal) {
-    printf("%d signal was called\n", signal);
+    printf("signal %d was called\n", signal);
 }

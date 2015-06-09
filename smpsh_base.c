@@ -24,6 +24,7 @@
 #include "token.h"
 #include "commands.h"
 #include "helper.h"
+#include "signals.h"
 
 int main(void) {
     char defaulttext[] = "smpsh > ";
@@ -38,7 +39,7 @@ int main(void) {
     int word_count = 0;
     CommandQueue cmdQ;
 
-
+    initOldHandlerList();
     /* Schleife ueber alle Eingabezeilen    */
     while (TRUE) {
 

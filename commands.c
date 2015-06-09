@@ -141,6 +141,13 @@ int execute_command(Command command) {
         installSignalHandler(signalValue, getHandler(handler));
         executed = 1;
     }
+    if (strcmp(cmd, "sig_uninstall") == 0) {
+        int signalValue;
+        signalValue = sig_getsignalnumber(command->args->arg);
+        printf("Removing handler from signal %s (%d)\n", command->args->arg, signalValue);
+        uninstallSignalHandler(signalValue);
+        executed = 1;
+    }
 
     return executed;
 }

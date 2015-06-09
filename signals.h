@@ -18,6 +18,7 @@ int  sig_getsignalnumber(char *);
 void installSignalHandler(int, HandlerFunction);
 void uninstallSignalHandler(int);
 HandlerFunction getHandler(char*);
+void initOldHandlerList();
 
 /*
  * Handler functions
@@ -30,5 +31,6 @@ void printThatSignalWasCalled(int);
 #define _MYLINUX_ 1
 
 extern char *signallist[];
+extern struct sigaction *oldHandler;
 
 #endif //OS_PRAKTIKUM_SIGNALS_H
