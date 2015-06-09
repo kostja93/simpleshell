@@ -75,5 +75,24 @@ HandlerFunction getHandler(char* handlerName) {
 }
 
 void installSignalHandler(int signalId, HandlerFunction handler) {
+    struct sigaction new_action, old_action;
+    new_action.sa_handler = handler;
+    sigemptyset(&new_action.sa_mask);
+    new_action.sa_flags = 0;
 
+    sigaction(signalId, NULL, &old_action);
+    sigaction(signalId, &new_action, NULL);
+}
+
+void uninstallSignalHandler(int signalId) {
+    struct sigaction old_action;
+
+    sigaction(signalId, NULL, &old_action);
+}
+
+void sayHello(int signal) {
+    printf("Hello World!\n");
+}
+void printThatSignalWasCalled(int signal) {
+    printf("%d signal was called\n", signal);
 }

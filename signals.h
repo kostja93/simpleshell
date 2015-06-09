@@ -10,24 +10,25 @@
 #include <string.h>
 #include <signal.h>
 
+typedef void (*HandlerFunction) (int);
+
 void sig_getlist(void);
 int  sig_getsignalnumber(char *);
 
 void installSignalHandler(int, HandlerFunction);
+void uninstallSignalHandler(int);
 HandlerFunction getHandler(char*);
 
 /*
  * Handler functions
  */
 
-void sayHello();
-void printThatSignalWasCalled();
+void sayHello(int);
+void printThatSignalWasCalled(int);
 
 #define LISTLENGTH 32
 #define _MYLINUX_ 1
 
 extern char *signallist[];
-
-typedef void (*HandlerFunction) (void);
 
 #endif //OS_PRAKTIKUM_SIGNALS_H

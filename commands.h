@@ -71,5 +71,6 @@ void debug_command(Command cmd);
 void print_error(char* error_string);
 void debug_arg_array(char** args);
 void debug_commands_queue(CommandQueue cmds);
+void close_d(int descriptor);
 
 #endif /*SMPSH_BASE_COMMANDS_H*/

@@ -135,8 +135,10 @@ int execute_command(Command command) {
         signal    = arguments->arg;
         arguments = arguments->next;
         handler   = arguments->arg;
-        signalValue = 1;
+        signalValue = sig_getsignalnumber(signal);
         printf("Installing new handler %s for %s (%d)\n", handler, signal, signalValue);
+
+        installSignalHandler(signalValue, getHandler(handler));
         executed = 1;
     }
 
@@ -223,14 +225,14 @@ void execute_command_process(Command command, int amp, int input, int output) {
                 print_error("Error while changing stdin");
                 exit(-1);
             }
-            close(input);
+            close_d(input);
         }
         if (output != STDOUT_FILENO) {
             if ( dup2(output, STDOUT_FILENO) < 0){
                 print_error("Error while changing stdout");
                 exit(-2);
             }
-            close(output);
+            close_d(output);
         }
         if (execvp(command->cmd, args) == -1 ){
             print_error("Error while loading programm");
@@ -279,16 +281,16 @@ void execute_queue(CommandQueue cmds, int amp) {
 
                 if (cmds->next == NULL){
                     output = STDOUT_FILENO;
-                    close(fd[1]);
+                    close_d(fd[1]);
                 }
                 else
                     output = fd[1];
 
                 execute_command_process(cmd, amp, input, output);
                 if (input != STDIN_FILENO)
-                    close(input);
+                    close_d(input);
                 if (output != STDOUT_FILENO)
-                    close(output);
+                    close_d(output);
 
                 output = fd[0];
             }
@@ -387,5 +389,10 @@ void print_error(char* error_string) {
         write(logfile, error_string, strlen(error_string));
     }
 
-    close(logfile);
+    close_d(logfile);
+}
+
+void close_d(int descriptor) {
+    if (descriptor != STDIN_FILENO && descriptor != STDOUT_FILENO)
+        close(descriptor);
 }
