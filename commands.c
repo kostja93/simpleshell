@@ -162,6 +162,11 @@ int execute_command(Command command) {
         unblockSignal(signalValue);
         executed = 1;
     }
+    if (strcmp(cmd, "sig_pending") == 0) {
+        printf("Pending signals:\n");
+        printPendingSignals();
+        executed = 1;
+    }
 
     return executed;
 }

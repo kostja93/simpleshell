@@ -123,6 +123,22 @@ void unblockSignal(int signalId) {
     }
 }
 
+void printPendingSignals() {
+    int signal;
+    signal = 1;
+    sigset_t pendingSignals;
+
+    if (sigpending(&pendingSignals) == 0) {
+        while( signallist[signal] != NULL ) {
+            if (sigismember(&pendingSignals, signal))
+                printf("Signal [%2d] %s\n", signal, signallist[signal]);
+            signal++;
+        }
+    } else {
+        printf("Unable to print pending signals!\n");
+    }
+}
+
 void sayHello(int signal) {
     printf("Hello World!\n");
 }

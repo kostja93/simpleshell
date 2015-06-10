@@ -38,6 +38,7 @@ extern sigset_t *blockedSignals;
 
 void blockSignal(int);
 void unblockSignal(int);
+void printPendingSignals();
 
 #define LISTLENGTH 32
 #define _MYLINUX_ 1
