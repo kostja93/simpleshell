@@ -79,6 +79,12 @@ HandlerFunction getHandler(char* handlerName) {
 
 void installSignalHandler(int signalId, HandlerFunction handler) {
     struct sigaction new_action, old_action;
+
+    if ( (signalId > LISTLENGTH || signalId <= 0) || handler == NULL) {
+        printf("Unable to install handler for signal %d\n", signalId);
+        return;
+    }
+
     new_action.sa_handler = handler;
     sigemptyset(&new_action.sa_mask);
     new_action.sa_flags = SA_RESTART;
@@ -90,6 +96,11 @@ void installSignalHandler(int signalId, HandlerFunction handler) {
 }
 
 void uninstallSignalHandler(int signalId) {
+    if (signalId > LISTLENGTH || signalId <= 0) {
+        printf("There is no signal %d, unistall aborted!\n", signalId);
+        return ;
+    }
+
     sigaction(signalId, &oldHandler[signalId], NULL);
 }
 
@@ -98,6 +109,12 @@ void initOldHandlerList() {
 }
 
 void blockSignal(int signalId) {
+    if (signalId > LISTLENGTH || signalId <= 0) {
+        printf("There is no signal %d, blocking aborted!\n", signalId);
+        return ;
+    }
+
+
     if (blockedSignals == NULL) {
         blockedSignals = malloc(sizeof(sigset_t));
         sigemptyset(blockedSignals);
@@ -112,6 +129,11 @@ void blockSignal(int signalId) {
 void unblockSignal(int signalId) {
     sigset_t allSignals;
     sigfillset(&allSignals);
+
+    if (signalId > LISTLENGTH || signalId <= 0) {
+        printf("There is no signal %d, unblocking aborted!\n", signalId);
+        return ;
+    }
 
     if (blockedSignals == NULL)
         return ;
