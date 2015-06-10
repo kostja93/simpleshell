@@ -148,6 +148,20 @@ int execute_command(Command command) {
         uninstallSignalHandler(signalValue);
         executed = 1;
     }
+    if (strcmp(cmd, "sig_block") == 0) {
+        int signalValue;
+        signalValue = sig_getsignalnumber(command->args->arg);
+        printf("Blocking Signal\n");
+        blockSignal(signalValue);
+        executed = 1;
+    }
+    if(strcmp(cmd, "sig_unblock") == 0) {
+        int signalValue;
+        signalValue = sig_getsignalnumber(command->args->arg);
+        printf("Unblocking signal\n");
+        unblockSignal(signalValue);
+        executed = 1;
+    }
 
     return executed;
 }

@@ -42,6 +42,7 @@ char *signallist[] = { " ",\
 #endif
 
 struct sigaction *oldHandler;
+sigset_t *blockedSignals;
 
 void sig_getlist()
 {
@@ -69,7 +70,7 @@ HandlerFunction getHandler(char* handlerName) {
     if (strcmp(handlerName, "sayHello") == 0) {
         return &sayHello;
     }
-    if (strcmp(handlerName, "print")) {
+    if (strcmp(handlerName, "print") == 0) {
         return &printThatSignalWasCalled;
     }
 
@@ -94,6 +95,32 @@ void uninstallSignalHandler(int signalId) {
 
 void initOldHandlerList() {
     oldHandler = malloc(sizeof(struct sigaction) * LISTLENGTH);
+}
+
+void blockSignal(int signalId) {
+    if (blockedSignals == NULL) {
+        blockedSignals = malloc(sizeof(sigset_t));
+        sigemptyset(blockedSignals);
+    }
+
+    if (!sigismember(blockedSignals, signalId)) {
+        sigaddset(blockedSignals, signalId);
+        sigprocmask(SIG_BLOCK, blockedSignals, NULL);
+    }
+}
+
+void unblockSignal(int signalId) {
+    sigset_t allSignals;
+    sigfillset(&allSignals);
+
+    if (blockedSignals == NULL)
+        return ;
+
+    if (sigismember(blockedSignals, signalId)) {
+        sigprocmask(SIG_UNBLOCK, &allSignals, NULL);
+        sigdelset(blockedSignals, signalId);
+        sigprocmask(SIG_BLOCK, blockedSignals, NULL);
+    }
 }
 
 void sayHello(int signal) {

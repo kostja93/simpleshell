@@ -15,6 +15,10 @@ typedef void (*HandlerFunction) (int);
 void sig_getlist(void);
 int  sig_getsignalnumber(char *);
 
+/*
+ * Signal installation
+ */
+
 void installSignalHandler(int, HandlerFunction);
 void uninstallSignalHandler(int);
 HandlerFunction getHandler(char*);
@@ -26,6 +30,14 @@ void initOldHandlerList();
 
 void sayHello(int);
 void printThatSignalWasCalled(int);
+
+/*
+ * Signal blocking
+ */
+extern sigset_t *blockedSignals;
+
+void blockSignal(int);
+void unblockSignal(int);
 
 #define LISTLENGTH 32
 #define _MYLINUX_ 1
