@@ -116,6 +116,7 @@ int main(void) {
                 execute_queue(cmdQ, amp);
                 cmd  = NULL;
                 cmdQ = NULL;
+                amp = 0;
             }
         } else {
             print_error("To many &");
